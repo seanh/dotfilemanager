@@ -68,8 +68,8 @@ make up a name for the account and pass it as a command-line argument
 overriding the system hostname.
 
 """
-import os,sys
-import platform
+import os,sys,platform
+
 HOSTNAME = platform.node()
 HOSTNAME_SEPARATOR = '__'
     
