@@ -125,9 +125,9 @@ def get_target_paths(to_dir):
         else:
             if HOSTNAME_SEPARATOR in filename:
                 # This appears to be a filename with a trailing
-                # hostname, e.g. _muttrc_dulip. If the trailing hostname
-                # matches the hostname of this computer then we link to
-                # it.
+                # hostname, e.g. _muttrc__dulip. If the trailing
+                # hostname matches the hostname of this host then we
+                # link to it.
                 hostname = filename.split(HOSTNAME_SEPARATOR)[-1]
                 if hostname == HOSTNAME:
                     path = os.path.join(to_dir,filename)
