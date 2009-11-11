@@ -48,16 +48,24 @@ like this in TO_DIR:
     
     _config
     _config/openbox
-    _config/openbox.kisimul
-    _config/openbox.debxo
+    _config/openbox__kisimul
+    _config/openbox__debxo
     _config/terminator
-    _config/terminator.dulip
+    _config/terminator__dulip
     
 i.e. host-specific files and directories inside a subdirectory of
 TO_DIR. Want to allow for untracked files in the FROM_DIR/.config on the
 host, so don't symlink subdirectories of TO_DIR themselves but recurse
 into them and symlink any files inside, then recurse into any
 subdirectories and repeat.
+
+TODO: support hostname as a command-line argument, overriding the system
+hostname. This might be useful for accounts on networked systems where
+you login to the same user account from different computers, the system
+hostname will be different each time you switch computers but you want
+to use the same config files whenever you login to this account. So just
+make up a name for the account and pass it as a command-line argument
+overriding the system hostname.
 
 """
 import os,sys
