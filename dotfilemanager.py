@@ -216,47 +216,48 @@ def link(from_dir,to_dir,report=False):
                 os.symlink(to_path,from_path)
 
 def usage():
-    return """makelinks [options] link|tidy|report
+    return """Usage:
+
+makelinks link|tidy|report [FROM_DIR [TO_DIR]]
     
 Commands:
    link -- make symlinks in FROM_DIR to files and directories in TO_DIR
    tidy -- remove broken symlinks from FROM_DIR
-   report -- report on symlinks in FROM_DIR and files and directories in TO_DIR"""
+   report -- report on symlinks in FROM_DIR and files and directories in TO_DIR
+   
+FROM_DIR defaults to ~ and TO_DIR defaults to ~/.dotfiles.
+   """
 
 if __name__ == "__main__":
-    import optparse
-    parser = optparse.OptionParser(usage=usage())
-
-    parser.add_option('-f', '--from', action='store', dest='FROM_DIR',default=os.path.expanduser('~'), help="The directory to create symlinks in.")
-    parser.add_option('-t', '--to', action='store', dest='TO_DIR',default=os.path.join(os.path.expanduser('~'),'.dotfiles'), help="The directory to create symlinks to.")
-
-    options, remainder = parser.parse_args()
-
-    FROM_DIR = options.FROM_DIR
+    try:
+        ACTION = sys.argv[1]
+    except IndexError:
+        print usage()
+        sys.exit(2)
+    try:
+        FROM_DIR = sys.argv[2]
+    except IndexError:
+        FROM_DIR = os.path.expanduser('~')
     if not os.path.isdir(FROM_DIR):
-        print FROM_DIR+" is not a directory!"
-        parser.print_usage()
+        print "FROM_DIR %s is not a directory!" % FROM_DIR
+        print usage()
         sys.exit(2)
-
-    TO_DIR = options.TO_DIR
+    try:
+        TO_DIR = sys.argv[3]
+    except IndexError:
+        TO_DIR = os.path.join(os.path.expanduser('~'),'.dotfiles')
     if not os.path.isdir(TO_DIR):
-        print TO_DIR+" is not a directory!"
-        parser.print_usage()
+        print "TO_DIR %s is not a directory!" % TO_DIR
+        print usage()
         sys.exit(2)
 
-    if len(remainder) != 1:
-        parser.print_usage()
-        sys.exit(2)
-    else:
-        COMMAND = remainder[0]
-    
-    if COMMAND == 'link':    
+    if ACTION == 'link':
         link(FROM_DIR,TO_DIR)
-    elif COMMAND == 'tidy':
+    elif ACTION == 'tidy':
         tidy(FROM_DIR)
-    elif COMMAND == 'report':
+    elif ACTION == 'report':
         link(FROM_DIR,TO_DIR,report=True)
         tidy(FROM_DIR,report=True)
     else:
-        parser.print_usage()
+        print usage()
         sys.exit(2)
