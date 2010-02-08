@@ -122,9 +122,6 @@ def get_target_paths(to_dir):
         if filename.endswith('~'):
             print 'Skipping %s' % filename
             continue            
-        elif filename in ['.gitignore','.git','README','makelinks']:
-            print 'Skipping %s' % filename
-            continue
         elif (not os.path.isfile(path)) and (not os.path.isdir(path)):
             print 'Skipping %s (not a file or directory)' % filename
             continue
