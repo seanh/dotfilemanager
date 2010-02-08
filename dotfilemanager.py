@@ -43,23 +43,32 @@ linked to. On other hosts _muttrc will be linked to.
 `dotfilemanager report` will just report on what link or tidy would do
 without actually making any changes to the filesystem.
 
-TODO: support recursing into subdirectories, so I can have something
-like this in TO_DIR:
-    
-    _config
-    _config/openbox
-    _config/openbox__kisimul
-    _config/openbox__debxo
-    _config/terminator
-    _config/terminator__dulip
-    
-i.e. host-specific files and directories inside a subdirectory of
-TO_DIR. Want to allow for untracked files in the FROM_DIR/.config on the
-host, so don't symlink subdirectories of TO_DIR themselves but recurse
-into them and symlink any files inside, then recurse into any
-subdirectories and repeat.
+Tip: handle directories like ~/.config separately
+-------------------------------------------------
 
-TODO: support hostname as a command-line argument, overriding the system
+On my system a lot of config files are stored in ~/.config. I want to
+manage some of the files in ~/.config but not all of them. I have
+host-specific version of some files in ~/.config but not others. I
+wouldn't want to move ~/.config to ~/.dotfiles/_config and have
+dotfilemanager.py make a symlink ~/.config -> ~/.dotfiles/_config
+because that would be putting _all_ the files in ~/config into
+~/.dotfiles, and dotfilemanager.py would make the same symlink for every
+host, if I wanted a host-specific version of ~/.config I'd have to put
+_another_ complete copy of the directory into ~/.dotfiles with a
+__hostname at the end.
+
+What you can to do is have a ~/config directory separate from
+~/.dotfiles, move the files from ~/.config that you want to manage into
+~/config, make host-specific versions if you want, then run both
+commands:
+
+    dotfilemanager.py link ~ ~/.dotfiles
+    dotfilemanager.py link ~/.config ~/config
+
+TODO
+----
+
+Support hostname as a command-line argument, overriding the system
 hostname. This might be useful for accounts on networked systems where
 you login to the same user account from different computers, the system
 hostname will be different each time you switch computers but you want
