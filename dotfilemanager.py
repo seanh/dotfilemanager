@@ -40,7 +40,7 @@ linked to. On other hosts _muttrc will be linked to.
 (To discover the hostname of your machine run `uname -n`.)
 
 `dotfilemanager tidy` will remove any dangling symlinks in FROM_DIR, and
-`dotfilemanager report` will just report on what link or tidy would do
+`dotfilemanager report` will just report on what link and tidy would do
 without actually making any changes to the filesystem.
 
 Tip: handle directories like ~/.config separately
@@ -65,21 +65,25 @@ commands:
     dotfilemanager.py link ~ ~/.dotfiles
     dotfilemanager.py link ~/.config ~/config
 
-TODO
-----
+Tip: override hostname with DOTFILEMANAGER_HOSTNAME environment variable
+------------------------------------------------------------------------
 
-Support hostname as a command-line argument, overriding the system
-hostname. This might be useful for accounts on networked systems where
-you login to the same user account from different computers, the system
-hostname will be different each time you switch computers but you want
-to use the same config files whenever you login to this account. So just
-make up a name for the account and pass it as a command-line argument
-overriding the system hostname.
+If the DOTFILEMANAGER_HOSTNAME environment variable is set then it is used
+instead of your real hostname to resolve hostname-specific files in TO_DIR.
+This is useful for accounts on networked systems where you login to the same
+user account from different computers, the system hostname will be different
+each time you switch computers but you want to use the same config files
+whenever you login to this account. So just make up a name for the account and
+set it as the value of DOTFILEMANAGER_HOSTNAME.
 
 """
 import os,sys,platform
 
-HOSTNAME = platform.node()
+# TODO: allow setting hostname as a command-line argument also?
+try:
+    HOSTNAME = os.environ['DOTFILEMANAGER_HOSTNAME']
+except KeyError:
+    HOSTNAME = platform.node()
 HOSTNAME_SEPARATOR = '__'
     
 def tidy(d,report=False):
@@ -96,10 +100,8 @@ def tidy(d,report=False):
     for f in os.listdir(d):
         path = os.path.join(d,f)
         if os.path.islink(path):
-            target_path = os.readlink(path)            
-            if not os.path.isabs(target_path):
-                # This is a relative symlink, resolve it.
-                target_path = os.path.join(os.path.dirname(path),target_path)             
+            target_path = os.readlink(path)
+            target_path = os.path.abspath(os.path.expanduser(target_path))
             if not os.path.exists(target_path):                
                 # This is a broken symlink.
                 if report:
@@ -108,7 +110,7 @@ def tidy(d,report=False):
                     print 'Deleting broken symlink: %s->%s' % (path,target_path)
                     os.remove(path)                    
 
-def get_target_paths(to_dir):
+def get_target_paths(to_dir,report=False):
     """Return the list of absolute paths to link to for a given to_dir.
     
     This handles skipping various types of filename in to_dir and
@@ -120,13 +122,16 @@ def get_target_paths(to_dir):
     for filename in filenames:
         path = os.path.join(to_dir,filename)
         if filename.endswith('~'):
-            print 'Skipping %s' % filename
+            if report:
+                print 'Skipping %s' % filename
             continue            
         elif (not os.path.isfile(path)) and (not os.path.isdir(path)):
-            print 'Skipping %s (not a file or directory)' % filename
+            if report:
+                print 'Skipping %s (not a file or directory)' % filename
             continue
         elif filename.startswith('.'):
-            print 'Skipping %s (filename has a leading dot)' % filename
+            if report:
+                print 'Skipping %s (filename has a leading dot)' % filename
             continue
         else:
             if HOSTNAME_SEPARATOR in filename:
@@ -136,16 +141,17 @@ def get_target_paths(to_dir):
                 # link to it.
                 hostname = filename.split(HOSTNAME_SEPARATOR)[-1]
                 if hostname == HOSTNAME:
-                    path = os.path.join(to_dir,filename)
                     paths.append(path)
                 else:
-                    print 'Skipping %s (different hostname)' % filename
+                    if report:
+                        print 'Skipping %s (different hostname)' % filename
                     continue                    
             else:
                 # This appears to be a filename without a trailing
                 # hostname.
                 if filename + HOSTNAME_SEPARATOR + HOSTNAME in filenames: 
-                    print 'Skipping %s (there is a host-specific version of this file for this host)' % filename
+                    if report:
+                        print 'Skipping %s (there is a host-specific version of this file for this host)' % filename
                     continue
                 else:                                            
                     paths.append(path)    
@@ -170,7 +176,7 @@ def link(from_dir,to_dir,report=False):
     
     """
     # The paths in to_dir that we will be symlinking to.
-    to_paths = get_target_paths(to_dir)
+    to_paths = get_target_paths(to_dir,report)
     
     # Dictionary of symlinks we will be creating, from_path->to_path
     symlinks = {}
@@ -193,7 +199,8 @@ def link(from_dir,to_dir,report=False):
         # Check that nothing already exists at from_path.
         if os.path.islink(from_path):
             # A link already exists.
-            existing_to_path = os.readlink(from_path) 
+            existing_to_path = os.readlink(from_path)
+            existing_to_path = os.path.abspath(os.path.expanduser(existing_to_path))
             if  existing_to_path == to_path:
                 # It's already a link to the intended target. All is
                 # well.
@@ -237,7 +244,7 @@ if __name__ == "__main__":
     try:
         FROM_DIR = sys.argv[2]
     except IndexError:
-        FROM_DIR = os.path.expanduser('~')
+        FROM_DIR = '~'
     if not os.path.isdir(FROM_DIR):
         print "FROM_DIR %s is not a directory!" % FROM_DIR
         print usage()
@@ -245,11 +252,14 @@ if __name__ == "__main__":
     try:
         TO_DIR = sys.argv[3]
     except IndexError:
-        TO_DIR = os.path.join(os.path.expanduser('~'),'.dotfiles')
+        TO_DIR = os.path.join('~','.dotfiles')
     if not os.path.isdir(TO_DIR):
         print "TO_DIR %s is not a directory!" % TO_DIR
         print usage()
         sys.exit(2)
+
+    TO_DIR = os.path.abspath(os.path.expanduser(TO_DIR))
+    FROM_DIR = os.path.abspath(os.path.expanduser(FROM_DIR))
 
     if ACTION == 'link':
         link(FROM_DIR,TO_DIR)
