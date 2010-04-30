@@ -151,7 +151,7 @@ def link(from_dir,to_dir,report=False):
 def usage():
     return """Usage:
 
-makelinks link|tidy|report [FROM_DIR [TO_DIR]]
+dotfilemanager link|tidy|report [FROM_DIR [TO_DIR]]
     
 Commands:
    link -- make symlinks in FROM_DIR to files and directories in TO_DIR
