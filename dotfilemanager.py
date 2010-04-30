@@ -31,7 +31,7 @@ def tidy(d,report=False):
             if not os.path.exists(target_path):                
                 # This is a broken symlink.
                 if report:
-                    print 'Broken symlink will be deleted: %s->%s' % (path,target_path)                    
+                    print 'tidy would delete broken symlink: %s->%s' % (path,target_path)                    
                 else:
                     print 'Deleting broken symlink: %s->%s' % (path,target_path)
                     os.remove(path)                    
@@ -143,7 +143,7 @@ def link(from_dir,to_dir,report=False):
         else:
             # The path is clear, make the symlink.
             if report:
-                print 'A symlink will be made: %s->%s' % (from_path,to_path)
+                print 'link would make symlink: %s->%s' % (from_path,to_path)
             else:
                 print 'Making symlink %s->%s' % (from_path,to_path)
                 os.symlink(to_path,from_path)
