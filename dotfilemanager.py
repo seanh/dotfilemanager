@@ -167,32 +167,36 @@ if __name__ == "__main__":
     except IndexError:
         print usage()
         sys.exit(2)
+
     try:
         FROM_DIR = sys.argv[2]
     except IndexError:
         FROM_DIR = '~'
     FROM_DIR = os.path.abspath(os.path.expanduser(FROM_DIR))
+
     if not os.path.isdir(FROM_DIR):
         print "FROM_DIR %s is not a directory!" % FROM_DIR
         print usage()
         sys.exit(2)
-    if ACTION == 'tidy':
+
+    try:
+        TO_DIR = sys.argv[3]
+    except IndexError:
+        TO_DIR = os.path.join('~','.dotfiles')
+    TO_DIR = os.path.abspath(os.path.expanduser(TO_DIR))
+
+    if not os.path.isdir(TO_DIR):
+        print "TO_DIR %s is not a directory!" % TO_DIR
+        print usage()
+        sys.exit(2)
+
+    if ACTION == 'link':
+        link(FROM_DIR,TO_DIR)
+    elif ACTION == 'tidy':
         tidy(FROM_DIR)
-    else: 
-        try:
-            TO_DIR = sys.argv[3]
-        except IndexError:
-            TO_DIR = os.path.join('~','.dotfiles')
-        TO_DIR = os.path.abspath(os.path.expanduser(TO_DIR))
-        if not os.path.isdir(TO_DIR):
-            print "TO_DIR %s is not a directory!" % TO_DIR
-            print usage()
-            sys.exit(2)
-        if ACTION == 'link':
-            link(FROM_DIR,TO_DIR)
-        elif ACTION == 'report':
-            link(FROM_DIR,TO_DIR,report=True)
-            tidy(FROM_DIR,report=True)
-        else:
-            print usage()
-            sys.exit(2)
+    elif ACTION == 'report':
+        link(FROM_DIR,TO_DIR,report=True)
+        tidy(FROM_DIR,report=True)
+    else:
+        print usage()
+        sys.exit(2)
