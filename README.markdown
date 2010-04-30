@@ -5,6 +5,21 @@ Python and tweaked the behaviour a bit.
 
 [Steve Kemp's dotfile manager]: http://blog.steve.org.uk/i_ve_got_a_sick_friend__i_need_her_help_.html
 
+`dotfilemanager link` Make a symlink in your homedir to each top-level 
+file and directory in `~/.dotfiles`.
+
+`dotfilemanager tidy` Delete any broken symlinks in your homedir.
+
+`dotfilemanager report` Report on what link or tidy would do, but don't 
+actually create or delete any symlinks.
+
+Optionally you can specify the directories to link from and to as 
+arguments, usage:
+
+    dotfilemanager link|tidy|report [FROM_DIR [TO_DIR]]
+
+* * *
+
 The idea is that you have some folder called the `TO_DIR` (defaults to
 `~/.dotfiles`), where you move all the dotfiles that you want to manage,
 e.g.
