@@ -57,10 +57,6 @@ linked to. On other hosts `_muttrc` will be linked to.
 
 (To discover the hostname of your machine run `uname -n`.)
 
-`dotfilemanager tidy` will remove any dangling symlinks in `FROM_DIR`, and
-`dotfilemanager report` will just report on what link and tidy would do
-without actually making any changes to the filesystem.
-
 Tip: handle directories like `~/.config` separately
 -------------------------------------------------
 
