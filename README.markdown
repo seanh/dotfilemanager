@@ -1,4 +1,13 @@
-dotfilemanager.py - a dotfiles manager script.
+[![Latest Version](https://pypip.in/version/dotfilemanager/badge.svg)](https://pypi.python.org/pypi/dotfilemanager/)
+[![Downloads](https://pypip.in/download/dotfilemanager/badge.svg)](https://pypi.python.org/pypi/dotfilemanager/)
+[![Supported Python versions](https://pypip.in/py_versions/dotfilemanager/badge.svg)](https://pypi.python.org/pypi/dotfilemanager/)
+[![Development Status](https://pypip.in/status/dotfilemanager/badge.svg)](https://pypi.python.org/pypi/dotfilemanager/)
+[![License](https://pypip.in/license/dotfilemanager/badge.svg)](https://pypi.python.org/pypi/dotfilemanager/)
+
+dotfilemanager.py
+=================
+
+A dotfiles manager script.
 
 This is similar to [Steve Kemp's dotfile manager][] but I rewrote it in
 Python and tweaked the behaviour a bit.
